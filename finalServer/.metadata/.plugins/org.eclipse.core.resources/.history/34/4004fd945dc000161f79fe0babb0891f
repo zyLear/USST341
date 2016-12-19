@@ -1,0 +1,112 @@
+package projectServer;
+
+import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.*;
+import java.util.HashMap;
+
+public class ProjectServer {
+
+	ServerSocket server;
+	static public HashMap<String,Socket> doctor =new HashMap<String,Socket>();
+	
+	
+	
+	ProjectServer(){
+		try {
+		    server=new ServerSocket(8000);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
+	public void openServer(){
+		Socket client;
+		while(true){
+			try {
+				client=server.accept();
+				addSoket(client);
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+	}
+		
+
+	private void addSoket(Socket client) {
+		try {
+			//info=类型，账号，密码，
+			BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			String info=br.readLine();
+			 analysis(info,client);
+			
+		} catch (IOException e) {
+			  //连接失败
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void analysis(String info, Socket client){
+		
+		String[] string=info.split(",");
+		if(string[0].equals("dotor")){
+			doctor.put(string[1], client);
+			new DoctorThread(client).start();
+		}
+		else if(string[0].equals("charge")){
+			
+		}
+		
+	}
+	
+	public static void main(String[] args) {
+		new ProjectServer().openServer();
+
+	}
+
+}
+class StartThread extends Thread{
+	Socket client;
+	BufferedReader br;
+	BufferedWriter bw;
+	StartThread(Socket s){
+		this.client=s;
+		try {
+			br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			bw = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	public void run(){
+		String info;
+		while(true){
+			try {
+				info=br.readLine();
+				analysis();  //分析数据
+				
+			} catch (IOException e) {
+				//与客户端连接失败
+				e.printStackTrace();
+			}
+		}
+	}
+	private void analysis() {
+		
+	
+	}
+
+	
+	
+
+}

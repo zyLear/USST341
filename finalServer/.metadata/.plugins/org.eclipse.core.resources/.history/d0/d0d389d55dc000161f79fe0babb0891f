@@ -1,0 +1,46 @@
+package projectServer;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
+
+public class DoctorThread extends Thread {
+	Socket client;
+	BufferedReader br;
+	BufferedWriter bw;
+	DoctorThread(Socket s){
+		this.client=s;
+		try {
+			br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			bw = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	public void run(){
+		String info;
+		while(true){
+			try {
+				info=br.readLine();
+				analysis();  //分析数据
+				
+			} catch (IOException e) {
+				//与客户端连接失败
+				e.printStackTrace();
+			}
+		}
+	}
+	private void analysis() {
+		
+	
+	}
+
+
+}

@@ -1,0 +1,80 @@
+package finalServer;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
+
+import finalServer.Server.DoctorInfo;
+
+public class ChargeThread extends Thread {
+	
+	
+	Socket client;
+	BufferedReader br;
+	BufferedWriter bw;
+	ChargeThread(Socket s){
+		this.client=s;
+		try {
+			br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			bw = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	public void run(){
+		String info;
+		while(true){
+			try {
+				info=br.readLine();
+				analysis(info);  //分析数据
+				
+			} catch (IOException e) {
+				//与客户端连接失败
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	//info=department,name,sex,age.....
+	private void analysis(String info) {
+		
+		chooseDoctor(info);
+		
+	}
+
+	private DoctorInfo chooseDoctor(String info) {
+		DoctorInfo doctor = null;
+        String string[]=info.split(",");  
+		if(string[0].equals("internal")){
+			Server.internalCount++;		
+		}
+		else if(string[0].equals("surgery")){
+			Server.surgeryCount++;
+		}
+	
+		int min=100;
+		String doctorAccount;
+		for(DoctorInfo d:Server.onlineDoctor){
+			if(d.department.equals(string[0])){
+				if(d.waitCount<min){
+					min=d.waitCount;
+					doctor=d;
+				}
+			}		
+		}
+		
+		
+		
+		return doctor;
+		
+		
+	}
+
+}

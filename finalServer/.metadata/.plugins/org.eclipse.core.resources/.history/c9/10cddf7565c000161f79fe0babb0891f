@@ -1,0 +1,5 @@
+package finalServer;
+
+public class ChargeThread extends Thread {
+
+}
